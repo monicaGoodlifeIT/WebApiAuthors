@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
-using WebApiAuthors.Services;
 
 namespace WebApiAuthors
 {
@@ -23,12 +22,8 @@ namespace WebApiAuthors
             services.AddDbContext<AppDbContext>(options => 
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
-            // iHostedService
-            services.AddHostedService<Registry>();
+           
 
-
-            //filtro caché
-            services.AddResponseCaching();
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             services.AddEndpointsApiExplorer();
@@ -39,16 +34,6 @@ namespace WebApiAuthors
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env,
             ILogger<Startup> logger)
         {
-            // Pipeline que muestra string y pra el resto de las pipelines.
-            app.Map("/routeOne", app =>
-            {
-                app.Run(async context =>
-                {
-                    await context.Response.WriteAsync("interceptanto la Pipiline");
-                });
-            });
-
-
             // Configure the HTTP request pipeline.
             if (env.IsDevelopment())
             {
@@ -59,9 +44,6 @@ namespace WebApiAuthors
             app.UseHttpsRedirection();
 
             app.UseRouting();
-
-            // Filtros
-            app.UseResponseCaching();
 
             app.UseAuthorization();
 

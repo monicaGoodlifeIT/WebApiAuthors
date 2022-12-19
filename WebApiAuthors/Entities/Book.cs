@@ -1,12 +1,17 @@
-﻿namespace WebApiAuthors.Entities
+﻿using System.ComponentModel.DataAnnotations;
+using System.Xml.Linq;
+using WebApiAuthors.Validations;
+
+namespace WebApiAuthors.Entities
 {
     public class Book
     {
         public int Id { get; set; }
-        public string? Title { get; set; }
-        public int AuthorId { get; set; }
 
-        // Propiedad de Navegación
-        public Author? Author { get; set; }
+        [Required(ErrorMessage = "El campo {0} es obligatorio")]
+        [Display(Name = "Título")]
+        [StringLength(maximumLength: 150, ErrorMessage = "El campo {0} no debe tener más de {1} caracteres")]
+        [FirstCapitalLetter]
+        public string? Title { get; set; }
     }
 }

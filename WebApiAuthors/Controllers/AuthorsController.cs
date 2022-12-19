@@ -19,26 +19,13 @@ namespace WebApiAuthors.Controllers
         }
 
         // Acción con varias rutas
-        [HttpGet] // api/authors
-        [HttpGet("authorslist")] // api/authors/authorslist
-        [HttpGet("/authorslist")] // authorslist
-        public async Task<ActionResult<List<Author>>> Get()
-        {
-            //return new List<Author>()
-            //{
-            //    new Author(){Id=1, Name="Felipe"},
-            //    new Author(){Id=2, Name="Claudio"},
-            //};
-            _logger.LogInformation("Listado de Autores");
+        //[HttpGet] // api/authors
+        //public async Task<ActionResult<List<Author>>> Get()
+        //{
+        //    _logger.LogInformation("Listado de Autores");
+        //    return await _appDbContext.Authors.Include(x => x.Books).ToListAsync();
+        //}
 
-            return await _appDbContext.Authors.Include(x => x.Books).ToListAsync();
-        }
-
-        [HttpGet("author")] // api/authors/author
-        public async Task<ActionResult<Author>> FirstAuthor()
-        {
-            return await _appDbContext.Authors.FirstOrDefaultAsync();
-        }
 
         // Al añadir en la ruta la restrincción INT, al ingresar un tipo de datio no válido,
         // devolverá un error 404 (NotFaund), en lugar de 400(BadRequest).
@@ -56,9 +43,7 @@ namespace WebApiAuthors.Controllers
 
         // No existe la resticción STRING. Si se especifica, devuelve error.
         [HttpGet("{name}")]// api/authors/name
-        [HttpGet("{name}/{parameter2?}")]// api/authors/name/parameter2 --> el parametro2 es opcional
-        [HttpGet("{name}/{parameter2 = persona}")]// api/authors/name/persona --> el parametro2 tiene valor por defecto
-        public async Task<ActionResult<Author>> Get(string name, string parameter2)
+        public async Task<ActionResult<Author>> Get(string name)
         {
             var author = await _appDbContext.Authors.FirstOrDefaultAsync(x => x.Name.Contains(name));
 
