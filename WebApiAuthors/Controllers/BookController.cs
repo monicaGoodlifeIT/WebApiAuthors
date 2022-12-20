@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using WebApiAuthors.DTOs;
 using WebApiAuthors.Entities;
 
 namespace WebApiAuthors.Controllers
@@ -10,32 +12,41 @@ namespace WebApiAuthors.Controllers
     {
         // Declaración variable DbContect
         private readonly AppDbContext _appDbContext;
+        private readonly IMapper _mapper;
 
-        public BookController(AppDbContext appDbContext)
+
+        public BookController(AppDbContext appDbContext, IMapper mapper)
         {
             this._appDbContext = appDbContext;
+            _mapper = mapper;
         }
 
+        
+        [HttpGet("{id:Guid}")]
+        public async Task<ActionResult<BookDTO>> Get(Guid id)
+        {
+            var book = await _appDbContext.Books.FirstOrDefaultAsync(x => x.Id == id);
+            if (book == null)
+            {
+                return NotFound();
+            }
+            return _mapper.Map<BookDTO>(book);
+        }
 
-        //[HttpGet("{id:int}")]
-        //public async Task<ActionResult<Book>> Get(int id)
-        //{
-        //    return await _appDbContext.Books.Include(x => x.Author).FirstOrDefaultAsync(x => x.Id == id);
-        //}
+        [HttpPost]
+        public async Task<ActionResult> Post(BookAddDTO BookAddDTO)
+        {
+            //var autjorExists = await _appDbContext.Authors.AnyAsync(x => x.Id == book.AuthorId);
+            //if (!autjorExists)
+            //{
+            //    // BadRequest --> Devuelve error 400
+            //    return BadRequest($"No existe un autor con Id: {book.AuthorId}");
+            //}
 
-        //[HttpPost]
-        //public async Task<ActionResult> Post(Book book)
-        //{
-        //    var autjorExists = await _appDbContext.Authors.AnyAsync(x => x.Id == book.AuthorId);
-        //    if (!autjorExists)
-        //    {
-        //        // BadRequest --> Devuelve error 400
-        //        return BadRequest($"No existe un autor con Id: {book.AuthorId }");
-        //    }
-            
-        //    _appDbContext.Add(book);
-        //    await _appDbContext.SaveChangesAsync();
-        //    return Ok();
-        //}
+            var book = _mapper.Map<Book>(BookAddDTO);    
+            _appDbContext.Add(book);
+            await _appDbContext.SaveChangesAsync();
+            return Ok();
+        }
     }
 }

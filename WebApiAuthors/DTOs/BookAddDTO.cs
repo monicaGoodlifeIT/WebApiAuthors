@@ -2,12 +2,10 @@
 using System.Xml.Linq;
 using WebApiAuthors.Validations;
 
-namespace WebApiAuthors.Entities
+namespace WebApiAuthors.DTOs
 {
-    public class Book
+    public class BookAddDTO
     {
-        public Guid Id { get; set; }
-
         [Required(ErrorMessage = "El campo {0} es obligatorio")]
         [Display(Name = "Título")]
         [StringLength(maximumLength: 150, ErrorMessage = "El campo {0} no debe tener más de {1} caracteres")]

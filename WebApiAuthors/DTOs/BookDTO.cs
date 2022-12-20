@@ -2,9 +2,9 @@
 using System.Xml.Linq;
 using WebApiAuthors.Validations;
 
-namespace WebApiAuthors.Entities
+namespace WebApiAuthors.DTOs
 {
-    public class Book
+    public class BookDTO
     {
         public Guid Id { get; set; }
 

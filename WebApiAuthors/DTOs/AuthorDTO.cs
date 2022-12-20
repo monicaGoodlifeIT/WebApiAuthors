@@ -1,10 +1,10 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+using System.Xml.Linq;
 using WebApiAuthors.Validations;
 
-namespace WebApiAuthors.Entities
+namespace WebApiAuthors.DTOs
 {
-    public class Author 
+    public class AuthorDTO
     {
         public Guid Id { get; set; }
 

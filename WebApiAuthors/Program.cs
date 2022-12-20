@@ -8,6 +8,9 @@ startup.ConfigureServices(builder.Services);
 
 var app = builder.Build();
 
+// Seed the database
+SeedData.Initialize(app);
+
 var loggerService = (ILogger<Startup>?)app.Services.GetService(typeof(ILogger<Startup>));
 
 startup.Configure(app, app.Environment, loggerService);
