@@ -18,7 +18,12 @@ namespace WebApiAuthors.Controllers
         private readonly ILogger<AuthorsController> _logger;
         private readonly IMapper _mapper;
 
-
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="appDbContext"></param>
+        /// <param name="logger"></param>
+        /// <param name="mapper"></param>
         public AuthorsController(AppDbContext appDbContext, 
             ILogger<AuthorsController> logger,
             IMapper mapper)
@@ -27,18 +32,6 @@ namespace WebApiAuthors.Controllers
             _logger = logger;
             _mapper = mapper;
         }
-
-        /// <summary>
-        /// Listado de Autores, Sin DTO
-        /// </summary>
-        /// <returns></returns>
-        //[HttpGet] // api/authors
-        //public async Task<ActionResult<List<Author>>> Get()
-        //{
-        //    _logger.LogInformation("Listado de Autores");
-        //    //return await _appDbContext.Authors.Include(x => x.Books).ToListAsync();
-        //    return await _appDbContext.Authors.ToListAsync();
-        //}
 
         /// <summary>
         /// Listado de Autores, Con DTO
@@ -52,7 +45,7 @@ namespace WebApiAuthors.Controllers
         }
 
         /// <summary>
-        /// Registro de un autor, dado su Id
+        /// Registro de Autor, dado su Id, con DTO
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
@@ -71,25 +64,7 @@ namespace WebApiAuthors.Controllers
         }
 
         /// <summary>
-        /// Registro de un autor, dado su Nombre, Sin DTO
-        /// </summary>
-        /// <param name="name"></param>
-        /// <returns></returns>
-        // No existe la resticción STRING. Si se especifica, devuelve error.
-        //[HttpGet("{name}")]// api/authors/name
-        //public async Task<ActionResult<Author>> Get(string name)
-        //{
-        //    var author = await _appDbContext.Authors.FirstOrDefaultAsync(authorDB => authorDB.Name.Contains(name));
-
-        //    if (author == null)
-        //    {
-        //        return NotFound();
-        //    }
-        //    return author;
-        //}
-
-        /// <summary>
-        /// Registro de un autor, dado su parte o su Nombre completo, Con DTO
+        /// Registro de un Autor, dado parte o su Nombre completo, Con DTO
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
@@ -100,27 +75,6 @@ namespace WebApiAuthors.Controllers
             var authors = await _appDbContext.Authors.Where(authorDB => authorDB.Name.Contains(name)).ToListAsync();
             return _mapper.Map<List<AuthorDTO>>(authors);
         }
-
-        /// <summary>
-        /// Añadir nuevo Autor, Sin DTO
-        /// </summary>
-        /// <param name="author"></param>
-        /// <returns></returns>
-        //[HttpPost]
-        //public async Task<ActionResult> Post(Author author)
-        // {
-        //     // Validar si el nombre del autor ya existe en la DB.
-        //     var authorExists = await _appDbContext.Authors.AnyAsync(x => x.Name == author.Name);
-
-        //     if (authorExists)
-        //     {
-        //         return BadRequest($"El autor {author.Name}, ya existe en la BB - Controlador");
-        //     }
-
-        //     _appDbContext.Add(author);
-        //     await _appDbContext.SaveChangesAsync();
-        //     return Ok();
-        // }
 
         /// <summary>
         /// Añadir nuevo Autor, Con DTO 
@@ -147,43 +101,43 @@ namespace WebApiAuthors.Controllers
             return Ok();
         }
 
-        /// <summary>
-        /// Modificar resgtistro de Autor, Sin DTO
-        /// </summary>
-        /// <param name="author"></param>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        [HttpPut("{id:Guid}")]
-        public async Task<ActionResult> Put(Author author, Guid id)
-        {
-            if (author.Id != id)
-            {
-                // BadRequest --> Devuelve error 400
-                return BadRequest($"El id {id} del autor no coincide con el id proporcionado por la URL");
-            }
+        ///// <summary>
+        ///// Modificar resgistro de Autor, dado su Id, Sin DTO
+        ///// </summary>
+        ///// <param name="author"></param>
+        ///// <param name="id"></param>
+        ///// <returns></returns>
+        //[HttpPut("{id:Guid}")]
+        //public async Task<ActionResult> Put(Author author, Guid id)
+        //{
+        //    if (author.Id != id)
+        //    {
+        //        // BadRequest --> Devuelve error 400
+        //        return BadRequest($"El id {id} del autor no coincide con el id proporcionado por la URL");
+        //    }
 
-            _appDbContext.Update(author);
-            await _appDbContext.SaveChangesAsync();
-            return Ok();
-        }
+        //    _appDbContext.Update(author);
+        //    await _appDbContext.SaveChangesAsync();
+        //    return Ok();
+        //}
 
-        /// <summary>
-        /// Eliminar registro de Autor, Sin DTO
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        [HttpDelete("{id:Guid}")]
-        public async Task<ActionResult> Delete(Guid id)
-        {
-            var exists = await _appDbContext.Authors.AnyAsync(authorDB => authorDB.Id == id);
-            if (!exists)
-            {
-                return NotFound();
-            }
+        ///// <summary>
+        ///// Eliminar registro de Autor, dado su Id, Sin DTO
+        ///// </summary>
+        ///// <param name="id"></param>
+        ///// <returns></returns>
+        //[HttpDelete("{id:Guid}")]
+        //public async Task<ActionResult> Delete(Guid id)
+        //{
+        //    var exists = await _appDbContext.Authors.AnyAsync(authorDB => authorDB.Id == id);
+        //    if (!exists)
+        //    {
+        //        return NotFound();
+        //    }
        
-            _appDbContext.Remove(new Author() { Id = id });
-            await _appDbContext.SaveChangesAsync();
-            return Ok();
-        }
+        //    _appDbContext.Remove(new Author() { Id = id });
+        //    await _appDbContext.SaveChangesAsync();
+        //    return Ok();
+        //}
     }
 }

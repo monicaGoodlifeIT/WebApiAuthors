@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Xml.Linq;
+using WebApiAuthors.Entities;
 using WebApiAuthors.Validations;
 
 namespace WebApiAuthors.DTOs
@@ -13,5 +14,8 @@ namespace WebApiAuthors.DTOs
         [StringLength(maximumLength: 150, ErrorMessage = "El campo {0} no debe tener más de {1} caracteres")]
         [FirstCapitalLetter]
         public string? Title { get; set; }
+
+        // Propiedad de Navegación
+        public List<CommentDTO>? Comments { get; set; }
     }
 }

@@ -14,6 +14,11 @@ namespace WebApiAuthors.Utilities
 
             CreateMap<BookAddDTO, Book>(); // Sentido DB --> API (POST)
             CreateMap<Book, BookDTO>(); // Sentido API --> DB (GET)
+
+            CreateMap<CommentAddDTO, Comment>(); // Sentido DB --> API (POST)
+            CreateMap<Comment, CommentDTO>(); // Sentido API --> DB (GET)
+
+
         }
     }
 }

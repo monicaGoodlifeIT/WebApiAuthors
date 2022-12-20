@@ -53,6 +53,47 @@ namespace WebApiAuthors.Migrations
 
                     b.ToTable("Books");
                 });
+
+            modelBuilder.Entity("WebApiAuthors.Entities.Comment", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("BookID")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<DateTime?>("CreatedDate")
+                        .IsRequired()
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BookID");
+
+                    b.ToTable("Comments");
+                });
+
+            modelBuilder.Entity("WebApiAuthors.Entities.Comment", b =>
+                {
+                    b.HasOne("WebApiAuthors.Entities.Book", "Libro")
+                        .WithMany("Comments")
+                        .HasForeignKey("BookID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Libro");
+                });
+
+            modelBuilder.Entity("WebApiAuthors.Entities.Book", b =>
+                {
+                    b.Navigation("Comments");
+                });
 #pragma warning restore 612, 618
         }
     }

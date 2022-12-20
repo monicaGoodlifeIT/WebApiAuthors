@@ -30,7 +30,7 @@ namespace WebApiAuthors
                 conf.SwaggerDoc("v1", new OpenApiInfo
                 {
                     Title = "WebApiAuthors",
-                    Description = "Web API desarrollada en ele curso de UDEMY: Construyendo Web APIs RESTful con ASP.NET Core 6",
+                    Description = "Web API desarrollada con curso de UDEMY: Construyendo Web APIs RESTful con ASP.NET Core 6",
                     Contact = new OpenApiContact
                     {
                         Name = "Mónica Buenavida Corono",

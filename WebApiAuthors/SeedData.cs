@@ -76,17 +76,17 @@ namespace WebApiAuthors
                 context.Books.AddRange(
                     new Book()
                     {
-                        Id = Guid.NewGuid(),
+                        Id = Guid.Parse("589578A1-1469-47C9-83A8-0317A8593BE5"),
                         Title = "Here be sexist vampires"
                     },
                     new Book()
                     {
-                        Id = Guid.NewGuid(),
+                        Id = Guid.Parse("5D04B355-682A-4D01-9C5C-A5FC2BFB4A07"),
                         Title = "Taste of torment"
                     },
                     new Book()
                     {
-                        Id = Guid.NewGuid(),
+                        Id = Guid.Parse("1B697F1A-0474-4D9E-BE9E-DEF8C80AB841"),
                         Title = "The bite that binds"
                     },
                     new Book()
@@ -193,6 +193,37 @@ namespace WebApiAuthors
                     {
                         Id = Guid.NewGuid(),
                         Title = "The Specialist"
+                    }
+                );
+                context.SaveChanges();
+
+                //Comentarios ////////////////////
+                if (context.Comments.Any())
+                {
+                    return;   // DB has been seeded
+                }
+
+                context.Comments.AddRange(
+                    new Comment()
+                    {
+                        Id = Guid.NewGuid(),
+                        Content = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla tincidunt justo porta pellentesque ornare. Duis fringilla sed odio a hendrerit. Sed nunc sapien, lacinia ac mauris vitae, tincidunt tincidunt ex. Aenean vitae volutpat mi, in imperdiet ligula.",
+                        BookID= Guid.Parse("589578A1-1469-47C9-83A8-0317A8593BE5"),
+                        CreatedDate = DateTime.Now.AddDays(-21)
+                    },
+                    new Comment()
+                    {
+                        Id = Guid.NewGuid(),
+                        Content = "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+                        BookID= Guid.Parse("589578A1-1469-47C9-83A8-0317A8593BE5"),
+                        CreatedDate = DateTime.Now.AddDays(-13)
+                    },
+                    new Comment()
+                    {
+                        Id = Guid.NewGuid(),
+                        Content = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla tincidunt justo porta pellentesque ornare. Duis fringilla sed odio a hendrerit. Sed nunc sapien, lacinia ac mauris vitae, tincidunt tincidunt ex.",
+                        BookID = Guid.Parse("589578A1-1469-47C9-83A8-0317A8593BE5"),
+                        CreatedDate = DateTime.Now.AddDays(-3)
                     }
                 );
                 context.SaveChanges();
