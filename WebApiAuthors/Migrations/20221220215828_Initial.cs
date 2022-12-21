@@ -22,15 +22,37 @@ namespace WebApiAuthors.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "BookCollections",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Title = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Genre = table.Column<int>(type: "int", nullable: true),
+                    RegisterCreated = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_BookCollections", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Books",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Title = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false)
+                    Title = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
+                    BookCollectionID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Order = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Books", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Books_BookCollections_BookCollectionID",
+                        column: x => x.BookCollectionID,
+                        principalTable: "BookCollections",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -54,6 +76,11 @@ namespace WebApiAuthors.Migrations
                 });
 
             migrationBuilder.CreateIndex(
+                name: "IX_Books_BookCollectionID",
+                table: "Books",
+                column: "BookCollectionID");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Comments_BookID",
                 table: "Comments",
                 column: "BookID");
@@ -69,6 +96,9 @@ namespace WebApiAuthors.Migrations
 
             migrationBuilder.DropTable(
                 name: "Books");
+
+            migrationBuilder.DropTable(
+                name: "BookCollections");
         }
     }
 }

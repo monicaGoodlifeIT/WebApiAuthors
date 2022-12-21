@@ -12,7 +12,7 @@ using WebApiAuthors;
 namespace WebApiAuthors.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20221220181119_Initial")]
+    [Migration("20221220215828_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -46,6 +46,12 @@ namespace WebApiAuthors.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid>("BookCollectionID")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Order")
+                        .HasColumnType("int");
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(150)
@@ -53,7 +59,32 @@ namespace WebApiAuthors.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("BookCollectionID");
+
                     b.ToTable("Books");
+                });
+
+            modelBuilder.Entity("WebApiAuthors.Entities.BookCollection", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int?>("Genre")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("RegisterCreated")
+                        .IsRequired()
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("BookCollections");
                 });
 
             modelBuilder.Entity("WebApiAuthors.Entities.Comment", b =>
@@ -81,6 +112,15 @@ namespace WebApiAuthors.Migrations
                     b.ToTable("Comments");
                 });
 
+            modelBuilder.Entity("WebApiAuthors.Entities.Book", b =>
+                {
+                    b.HasOne("WebApiAuthors.Entities.BookCollection", null)
+                        .WithMany("Books")
+                        .HasForeignKey("BookCollectionID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("WebApiAuthors.Entities.Comment", b =>
                 {
                     b.HasOne("WebApiAuthors.Entities.Book", "Libro")
@@ -95,6 +135,11 @@ namespace WebApiAuthors.Migrations
             modelBuilder.Entity("WebApiAuthors.Entities.Book", b =>
                 {
                     b.Navigation("Comments");
+                });
+
+            modelBuilder.Entity("WebApiAuthors.Entities.BookCollection", b =>
+                {
+                    b.Navigation("Books");
                 });
 #pragma warning restore 612, 618
         }

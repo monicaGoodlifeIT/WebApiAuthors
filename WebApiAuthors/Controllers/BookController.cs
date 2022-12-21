@@ -11,16 +11,35 @@ namespace WebApiAuthors.Controllers
     /// </summary>
     [ApiController]
     [Route("api/[controller]")]
+    //[Route("api/[controller]/{BookCollectionID:Guid}")]
     public class BookController : ControllerBase
     {
         // Declaración variable DbContect
         private readonly AppDbContext _appDbContext;
         private readonly IMapper _mapper;
 
+        /// <summary>
+        ///     Constructor
+        /// </summary>
+        /// <param name="appDbContext"></param>
+        /// <param name="mapper"></param>
         public BookController(AppDbContext appDbContext, IMapper mapper)
         {
             this._appDbContext = appDbContext;
             _mapper = mapper;
+        }
+
+        /// <summary>
+        /// Listado de Colecciones, Con DTO
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet] // api/bookcollection
+        public async Task<ActionResult<List<BookDTO>>> Get()
+        {
+            var books = await _appDbContext.Books
+                .Include(bookDB => bookDB.Comments)
+                .ToListAsync();
+            return _mapper.Map<List<BookDTO>>(books);
         }
 
         /// <summary>
@@ -31,7 +50,8 @@ namespace WebApiAuthors.Controllers
         [HttpGet("{id:Guid}")]
         public async Task<ActionResult<BookDTO>> Get(Guid id)
         {
-            var book = await _appDbContext.Books.Include(bookDB => bookDB.Comments)
+            var book = await _appDbContext.Books
+                .Include(bookDB => bookDB.Comments)
                 .FirstOrDefaultAsync(x => x.Id == id);
             if (book == null)
             {

@@ -8,15 +8,19 @@ namespace WebApiAuthors.Utilities
     {
         public AutoMapperProfiles()
         {
-            CreateMap<AuthorAddDTO, Author>(); // Sentido DB --> API (POST)
-            CreateMap<Author, AuthorDTO>(); // Sentido API --> DB (GET)
-            CreateMap<AuthorUpdateDTO, Author>(); // Sentido DB --> API (PUT)
+            CreateMap<AuthorAddDTO, Author>(); // Sentido API --> DB  (POST)
+            CreateMap<Author, AuthorDTO>(); // Sentido DB --> API (GET)
+            CreateMap<AuthorUpdateDTO, Author>(); // Sentido API --> DB (PUT)
 
-            CreateMap<BookAddDTO, Book>(); // Sentido DB --> API (POST)
-            CreateMap<Book, BookDTO>(); // Sentido API --> DB (GET)
+            CreateMap<BookAddDTO, Book>(); // Sentido API --> DB  (POST)
+            CreateMap<Book, BookDTO>(); // Sentido DB --> API (GET)
 
-            CreateMap<CommentAddDTO, Comment>(); // Sentido DB --> API (POST)
-            CreateMap<Comment, CommentDTO>(); // Sentido API --> DB (GET)
+            CreateMap<CommentAddDTO, Comment>(); // Sentido API --> DB  (POST)
+            CreateMap<Comment, CommentDTO>(); // Sentido DB --> API (GET)
+
+            CreateMap<BookCollection, BookCollectionDTO>(); // Sentido DB --> API (GET)
+            CreateMap<BookCollectionAddDTO, BookCollection>(); // Sentido API --> DB  (POST)
+
 
 
         }
