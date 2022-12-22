@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Net;
 using WebApiAuthors.DTOs;
 using WebApiAuthors.Entities;
 
@@ -49,11 +50,28 @@ namespace WebApiAuthors.Controllers
         }
 
         /// <summary>
+        /// Obtiene data del comentrio, dado su Id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpGet("{id:Guid}", Name = "GetCommentById")]
+        public async Task<ActionResult<CommentDTO>> GetById(Guid id)
+        {
+            var comment = await _appDbContext.Comments.FirstOrDefaultAsync(commentDB => commentDB.Id == id);
+            if (comment == null)
+            {
+                return NotFound();
+            }                      
+
+            return _mapper.Map<CommentDTO>(comment);
+        }
+
+        /// <summary>
         /// Nuevo Comentario asociado a un Libro
         /// </summary>
-        /// <param name="bookId"></param>
-        /// <param name="commentAddDTO"></param>
-        /// <returns></returns>
+        /// <param name="bookId">Identificador del libro</param>
+        /// <param name="commentAddDTO">DTO</param>
+        /// <returns> Hoal Mundo respuesta</returns>
         [HttpPost]
         public async Task<ActionResult> Post(Guid bookId, CommentAddDTO commentAddDTO)
         {
@@ -68,7 +86,9 @@ namespace WebApiAuthors.Controllers
             _appDbContext.Add(comment);
             await _appDbContext.SaveChangesAsync();
 
-            return Ok();
+            // Mapero de la respuesta
+            var commentDTO = _mapper.Map<CommentDTO>(comment);
+            return CreatedAtRoute("GetCommentById", new { id = comment.Id, bookId = bookId }, commentDTO);
         }
 
 

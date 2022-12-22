@@ -53,7 +53,7 @@ namespace WebApiAuthors.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        [HttpGet("{id:Guid}")]// api/bookcollection/8032F738-4567-4503-945C-0D9CFBDF87FD
+        [HttpGet("{id:Guid}", Name ="GetBookCollectionById")]// api/bookcollection/8032F738-4567-4503-945C-0D9CFBDF87FD
         public async Task<ActionResult<BookCollectionDTO>> Get(Guid id)
         {
             var bookCollection = await _appDbContext.BookCollections
@@ -90,7 +90,10 @@ namespace WebApiAuthors.Controllers
             // DB Query
             _appDbContext.Add(bookCollection);
             await _appDbContext.SaveChangesAsync();
-            return Ok();
+
+            // Mapeado de respuesta
+            var bookCollectionDTO = _mapper.Map<BookCollectionDTO>(bookCollection);
+            return CreatedAtRoute("GetBookCollectionById", new { id = bookCollection.Id }, bookCollectionDTO);
         }
     }
 }

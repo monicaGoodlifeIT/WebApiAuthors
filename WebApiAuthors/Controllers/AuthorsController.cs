@@ -51,16 +51,19 @@ namespace WebApiAuthors.Controllers
         /// <returns></returns>
         // Al añadir en la ruta la restrincción INT, al ingresar un tipo de datio no válido,
         // devolverá un error 404 (NotFaund), en lugar de 400(BadRequest).
-        [HttpGet("{id:Guid}")]// api/authors/1
-        public async Task<ActionResult<AuthorDTO>> Get(Guid id)
+        [HttpGet("{id:Guid}", Name ="getAuthorById")]// api/authors/1
+        public async Task<ActionResult<AuthorDTOwithBooks>> Get(Guid id)
         {
-            var author = await _appDbContext.Authors.FirstOrDefaultAsync(authorDB => authorDB.Id == id);
+            var author = await _appDbContext.Authors
+                .Include(authorDB => authorDB.AuthorsBooks)
+                .ThenInclude(authorBookDB => authorBookDB.Book)                
+                .FirstOrDefaultAsync(authorDB => authorDB.Id == id);
 
             if (author == null)
             {
                 return NotFound();
             }
-            return _mapper.Map<AuthorDTO>(author);
+            return _mapper.Map<AuthorDTOwithBooks>(author);
         }
 
         /// <summary>
@@ -98,7 +101,11 @@ namespace WebApiAuthors.Controllers
             // DB Query
             _appDbContext.Add(author);
             await _appDbContext.SaveChangesAsync();
-            return Ok();
+
+            // Mapeado para la respuesta
+            var authorDTO = _mapper.Map<AuthorDTO>(author);
+            // Respuesta
+            return CreatedAtRoute("getAuthorById", new { id = author.Id }, authorDTO);
         }
 
         ///// <summary>

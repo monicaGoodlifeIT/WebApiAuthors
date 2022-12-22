@@ -39,10 +39,16 @@ namespace WebApiAuthors.Entities
 
 
         /// <summary>
-        /// Propiedad de Navegación - Listado de comentarios asociados al libro
+        /// Propiedad de Navegación - Listado de comentarios asociados al libro 
+        /// Relación Uno a Muchos, Libro/Comentarios
         /// </summary>
         public List<Comment>? Comments { get; set; }
 
- 
+        /// <summary>
+        /// Propiedad de navegación que conecta con la entidad AuthorBook  - Relación Tabla AuthorBook, Muchos a Muchos
+        /// </summary>
+        public List<AuthorBook>? AuthorsBooks { get; set; }
+
+
     }
 }

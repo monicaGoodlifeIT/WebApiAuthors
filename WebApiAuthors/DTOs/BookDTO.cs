@@ -5,6 +5,9 @@ using WebApiAuthors.Validations;
 
 namespace WebApiAuthors.DTOs
 {
+    /// <summary>
+    /// DTO Libros
+    /// </summary>
     public class BookDTO
     {
         /// <summary>
@@ -34,10 +37,9 @@ namespace WebApiAuthors.DTOs
         [Range(0, 50, ErrorMessage = "El campo {0} acepta valores entre {1} y {2}")]
         public int Order { get; set; }
 
-
         /// <summary>
-        /// Propiedad de Navegación --> Comentarios
+        /// Propiedad de Navegación --> Comentarios Relación Uno a Muchos, Libro/Comentarios
         /// </summary>
         public List<CommentDTO>? Comments { get; set; }
-    }
+    } 
 }

@@ -47,31 +47,67 @@ namespace WebApiAuthors.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        [HttpGet("{id:Guid}")]
-        public async Task<ActionResult<BookDTO>> Get(Guid id)
+        [HttpGet("{id:Guid}", Name ="GetBookById")]
+        public async Task<ActionResult<BookDTOwithAuthors>> Get(Guid id)
         {
-            var book = await _appDbContext.Books
+            var book = await _appDbContext.Books.Include(bookDB => bookDB.AuthorsBooks)
+                .ThenInclude(authorBookDB => authorBookDB.Author)
                 .Include(bookDB => bookDB.Comments)
                 .FirstOrDefaultAsync(x => x.Id == id);
+
             if (book == null)
             {
                 return NotFound();
             }
-            return _mapper.Map<BookDTO>(book);
+            // Orden de visualización de los autores
+            book.AuthorsBooks = book.AuthorsBooks.OrderBy(x => x.Order).ToList();
+
+            return _mapper.Map<BookDTOwithAuthors>(book);
         }
 
+ 
         /// <summary>
         /// Añade registro de Libro, con DTO
         /// </summary>
-        /// <param name="BookAddDTO"></param>
+        /// <param name="bookAddDTO"></param>
         /// <returns></returns>
         [HttpPost]
-        public async Task<ActionResult> Post(BookAddDTO BookAddDTO)
+        public async Task<ActionResult> Post(BookAddDTO bookAddDTO)
         {
-            var book = _mapper.Map<Book>(BookAddDTO);    
+            // Validar la existencia de autores
+            if (bookAddDTO.AuthorsIds == null)
+            {
+                return BadRequest("No se pued añadir un Libro si no existen Autores");
+            }
+
+            // Validar existencia de todos los autores recibidos
+            var authorsIds = await _appDbContext.Authors
+                .Where(authorDB => bookAddDTO.AuthorsIds.Contains(authorDB.Id))
+                .Select(authorDB => authorDB.Id)
+                .ToListAsync();
+            if(bookAddDTO.AuthorsIds.Count() != authorsIds.Count())
+            {
+                return BadRequest("Alguno de los autores enviados, no existe");
+            }
+
+            // Mapeo
+            var book = _mapper.Map<Book>(bookAddDTO);  
+            
+            // Orden de visualización de los autores
+            if(book.AuthorsBooks != null)
+            {
+                for(int i = 0; i < book.AuthorsBooks.Count; i++)
+                {
+                    book.AuthorsBooks[i].Order= i;
+                }
+            }
+            // Envia a DB
             _appDbContext.Add(book);
             await _appDbContext.SaveChangesAsync();
-            return Ok();
+
+            // Mapero de la respuesta
+            var bookDTO = _mapper.Map<BookDTO>(book);
+            return CreatedAtRoute("GetBookById", new { id = book.Id }, bookDTO);
         }
     }
 }

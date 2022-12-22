@@ -15,6 +15,20 @@ namespace WebApiAuthors
         public AppDbContext(DbContextOptions options) : base(options) {}
 
         /// <summary>
+        /// Define la clave foránea compuesta de la entidad AuthorBook
+        /// </summary>
+        /// <param name="modelBuilder"></param>
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            // Define la clave foránea compuesta de la entidad AuthorBook
+            modelBuilder.Entity<AuthorBook>()
+                .HasKey(ab => new { ab.AuthorId, ab.BookId });
+        }
+
+
+        /// <summary>
         /// Conexión con tabla de Autores
         /// </summary>
         public DbSet<Author>? Authors { get; set; } = null!;
@@ -33,5 +47,10 @@ namespace WebApiAuthors
         /// Conexión con tabla de Comentarios
         /// </summary>
         public DbSet<Comment>? Comments { get; set; } = null!;
+
+        /// <summary>
+        /// Conexión con tabla de Comentarios
+        /// </summary>
+        public DbSet<AuthorBook>? AuthorsBooks { get; set; } = null!;
     }
 }

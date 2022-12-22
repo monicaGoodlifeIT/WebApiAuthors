@@ -1,5 +1,5 @@
 using WebApiAuthors;
-//using WebApiAuthors.SeedData;
+using WebApiAuthors.SeedData;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,10 +11,10 @@ var app = builder.Build();
 
 // Seed the database
 //SeedData.Initialize(app);
-//SeedDataAuthor.Initialize(app);
-//SeedDataBookCollection.Initialize(app);
-//SeedDataBook.Initialize(app);
-//SeedDataComment.Initialize(app);
+SeedDataAuthor.Initialize(app);
+SeedDataBookCollection.Initialize(app);
+SeedDataBook.Initialize(app);
+SeedDataComment.Initialize(app);
 
 var loggerService = (ILogger<Startup>?)app.Services.GetService(typeof(ILogger<Startup>));
 
