@@ -18,8 +18,9 @@ namespace WebApiAuthors
         public void ConfigureServices(IServiceCollection services)
         {
             // Se añaden las Opciones de Json para evitar los errores que se generan con las propiedades de navegación entre entidades.
-            services.AddControllers().AddJsonOptions(x => 
-                x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
+            services.AddControllers()
+                .AddJsonOptions(x => x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles)
+                .AddNewtonsoftJson();
 
             services.AddDbContext<AppDbContext>(options => 
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));

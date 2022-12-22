@@ -1,20 +1,14 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Xml.Linq;
-using WebApiAuthors.Entities;
 using WebApiAuthors.Validations;
 
 namespace WebApiAuthors.DTOs
 {
     /// <summary>
-    /// DTO Libros
+    /// DTO para HTTP Pach de Libro
     /// </summary>
-    public class BookDTO
+    public class BookPatchDTO
     {
-        /// <summary>
-        /// Identificador
-        /// </summary>
-        public Guid Id { get; set; }
-
         /// <summary>
         /// Título del Libro
         /// </summary>
@@ -46,10 +40,5 @@ namespace WebApiAuthors.DTOs
         [DataType(DataType.Date)]
         [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd/MM/yyyy}")]
         public DateTime? PublicationDate { get; set; }
-
-        /// <summary>
-        /// Propiedad de Navegación --> Comentarios Relación Uno a Muchos, Libro/Comentarios
-        /// </summary>
-        public List<CommentDTO>? Comments { get; set; }
-    } 
+    }
 }

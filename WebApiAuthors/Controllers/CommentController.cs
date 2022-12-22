@@ -91,6 +91,35 @@ namespace WebApiAuthors.Controllers
             return CreatedAtRoute("GetCommentById", new { id = comment.Id, bookId = bookId }, commentDTO);
         }
 
+        /// <summary>
+        /// Actualización TOTAL de registro de Comentario, dado su Id y el Id del libro, Con DTO 
+        /// </summary>
+        /// <param name="commentAddDTO">AddDTO</param>
+        /// <param name="id">Identificador del Comentario</param>
+        /// <param name="bookId">Identificador del Libro</param>
+        /// <returns></returns>
+        [HttpPut("{id:Guid}")]
+        public async Task<ActionResult> Put(CommentAddDTO commentAddDTO, Guid id, Guid bookId)
+        {
+            var book = await _appDbContext.Books.AnyAsync(bookDB => bookDB.Id == bookId);
+            if (book == null)
+            {
+                return NotFound();
+            }
 
+            var commentExists = await _appDbContext.Comments.AnyAsync(commentDB => commentDB.Id == id);
+            if(!commentExists)
+            {
+                return NotFound();
+            }
+
+            var comment = _mapper.Map<Comment>(commentAddDTO);
+            comment.Id = id;
+            comment.BookID = bookId;
+            _appDbContext.Update(comment);
+            await _appDbContext.SaveChangesAsync();
+
+            return NoContent(); // Retorna 204
+        }
     }
 }

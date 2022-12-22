@@ -22,7 +22,7 @@ namespace WebApiAuthors.Entities
         [Display(Name = "Título")]
         [StringLength(maximumLength: 150, ErrorMessage = "El campo {0} no debe tener más de {1} caracteres")]
         [FirstCapitalLetter]
-        public string? Title { get; set; }
+        public string Title { get; set; } = null!;
 
         /// <summary>
         /// Identificador de la Colección al que pertenece el libro
@@ -37,6 +37,15 @@ namespace WebApiAuthors.Entities
         [Range(0,50, ErrorMessage = "El campo {0} acepta valores entre {1} y {2}")]
         public int Order { get; set; }
 
+        /// <summary>
+        /// Fecha de Publicación del Libro
+        /// </summary>
+        /// 
+        [Required]
+        [Display(Name = "Publicado")]
+        [DataType(DataType.Date)]
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd/MM/yyyy hh:mm}")]
+        public DateTime? PublicationDate { get; set; }
 
         /// <summary>
         /// Propiedad de Navegación - Listado de comentarios asociados al libro 

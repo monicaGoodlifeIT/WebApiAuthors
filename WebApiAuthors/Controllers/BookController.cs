@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.EntityFrameworkCore;
 using WebApiAuthors.DTOs;
 using WebApiAuthors.Entities;
@@ -91,16 +92,10 @@ namespace WebApiAuthors.Controllers
             }
 
             // Mapeo
-            var book = _mapper.Map<Book>(bookAddDTO);  
-            
+            var book = _mapper.Map<Book>(bookAddDTO);
+
             // Orden de visualización de los autores
-            if(book.AuthorsBooks != null)
-            {
-                for(int i = 0; i < book.AuthorsBooks.Count; i++)
-                {
-                    book.AuthorsBooks[i].Order= i;
-                }
-            }
+            AssignAuthorsOrder(book);
             // Envia a DB
             _appDbContext.Add(book);
             await _appDbContext.SaveChangesAsync();
@@ -108,6 +103,108 @@ namespace WebApiAuthors.Controllers
             // Mapero de la respuesta
             var bookDTO = _mapper.Map<BookDTO>(book);
             return CreatedAtRoute("GetBookById", new { id = book.Id }, bookDTO);
+        }
+
+        /// <summary>
+        /// Actualización TOTAL de Entidad Libro, incluyendo sus Autores. 
+        /// Posteriormente se añadirán la Colección
+        /// </summary>
+        /// <param name="id">Identificador del Libro</param>
+        /// <param name="bookAddDTO">AddDTO</param>
+        /// <returns></returns>
+        [HttpPut("{id:Guid}")]
+        public async Task<ActionResult> Put(Guid id, BookAddDTO bookAddDTO)
+        {
+            var bookDB = await _appDbContext.Books
+                .Include(x => x.AuthorsBooks)
+                .FirstOrDefaultAsync(x => x.Id == id);
+            if (bookDB == null)
+            {
+                return NotFound(); // Retorna 400
+            }
+            // Mapeo que pasa la data de bookAddDTO a bookDB. Se guarda en libroBD,
+            // lo que permite editar todos los valores del libro aprevechando
+            // la instancia ya abierta con "var bookDB" y almacenada en memoria de Entity
+            // Framework Core.
+            bookDB = _mapper.Map(bookAddDTO, bookDB);
+
+            // Orden de visualización de los autores
+            AssignAuthorsOrder(bookDB);
+
+            await _appDbContext.SaveChangesAsync();
+
+            return NoContent(); // Retorna 204
+        }
+
+        private void AssignAuthorsOrder(Book book)
+        {
+            if (book.AuthorsBooks != null)
+            {
+                for (int i = 0; i < book.AuthorsBooks.Count; i++)
+                {
+                    book.AuthorsBooks[i].Order = i;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Actualización PARCIAL de Entidad Libro, incluyendo sus Autores. 
+        /// </summary>
+        /// <param name="id">Identificador del Libro</param>
+        /// <param name="patchDocument">Documento JsonPatch</param>
+        /// <returns></returns>
+        [HttpPatch("{id:Guid}")]
+        public async Task<ActionResult> Patch(Guid id, JsonPatchDocument<BookPatchDTO> patchDocument)
+        {
+            if(patchDocument == null)
+            {
+                return BadRequest("Formato incorrecto.");
+            }
+
+            var bookDB = await _appDbContext.Books.FirstOrDefaultAsync(x => x.Id == id);
+            if (bookDB == null)
+            {
+                return NotFound($"El libro con id {id}, no existe en la Base de Datos."); // Retorna 400
+            }
+
+            var bookDTO = _mapper.Map<BookPatchDTO>(bookDB);
+
+            // Aplicar los datos que vienen en el patchDocument, con mapeado
+            // con bookDTO y el estado del modelo por si ocurren errores.
+            patchDocument.ApplyTo(bookDTO, ModelState);
+
+            // Validar los datos recibidos
+            var isValid = TryValidateModel(bookDTO);
+            if (!isValid)
+            {
+                return BadRequest(ModelState); // Muestra errores de validación
+            }
+
+            _mapper.Map(bookDTO, bookDB);
+            await _appDbContext.SaveChangesAsync();
+
+            return NoContent(); // Retorna 204
+        }
+
+        /// <summary>
+        /// Eliminar registro de Libro y sus dependenicas, dado su Id, Sin DTO
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpDelete("{id:Guid}")]
+        public async Task<ActionResult> Delete(Guid id)
+        {
+            var exists = await _appDbContext.Books.AnyAsync(bookDB => bookDB.Id == id);
+            if (!exists)
+            {
+                return NotFound($"El Libro con id {id}, no existe en la Base de Datos");
+            }
+
+            _appDbContext.Remove(new Book() { Id = id });
+            await _appDbContext.SaveChangesAsync();
+
+            return NoContent(); // Retorna 204
+
         }
     }
 }

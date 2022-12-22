@@ -30,6 +30,16 @@ namespace WebApiAuthors.DTOs
         public int Order { get; set; }
 
         /// <summary>
+        /// Fecha de Publicación del Libro
+        /// </summary>
+        /// 
+        [Required]
+        [Display(Name = "Publicado")]
+        [DataType(DataType.Date)]
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd/MM/yyyy}")]
+        public DateTime? PublicationDate { get; set; }
+
+        /// <summary>
         /// Propiedad de navegación que conecta con la entidad AuthorBook  - Relación Muchos a Muchos
         /// </summary>
         public List<Guid>? AuthorsIds { get; set; }

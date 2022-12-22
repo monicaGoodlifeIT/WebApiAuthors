@@ -23,6 +23,8 @@ namespace WebApiAuthors.Utilities
             CreateMap<Book, BookDTO>();
             CreateMap<Book, BookDTOwithAuthors>()
                 .ForMember(bookDTO => bookDTO.Authors, opcions => opcions.MapFrom(MapBookDTOAuthors)); // Sentido DB --> API (GET)
+            CreateMap<BookPatchDTO, Book>().ReverseMap();
+
 
             CreateMap<CommentAddDTO, Comment>(); // Sentido API --> DB  (POST)
             CreateMap<Comment, CommentDTO>(); // Sentido DB --> API (GET)

@@ -108,43 +108,52 @@ namespace WebApiAuthors.Controllers
             return CreatedAtRoute("getAuthorById", new { id = author.Id }, authorDTO);
         }
 
-        ///// <summary>
-        ///// Modificar resgistro de Autor, dado su Id, Sin DTO
-        ///// </summary>
-        ///// <param name="author"></param>
-        ///// <param name="id"></param>
-        ///// <returns></returns>
-        //[HttpPut("{id:Guid}")]
-        //public async Task<ActionResult> Put(Author author, Guid id)
-        //{
-        //    if (author.Id != id)
-        //    {
-        //        // BadRequest --> Devuelve error 400
-        //        return BadRequest($"El id {id} del autor no coincide con el id proporcionado por la URL");
-        //    }
+      
+        /// <summary>
+        /// Actualización Total de registro de Autor, dado su Id, Con DTO    
+        /// </summary>
+        /// <param name="authorAddDTO">AddDTO</param>
+        /// <param name="id">Identificador del Comentario</param>
+        /// <returns></returns>
+        [HttpPut("{id:Guid}")]
+        public async Task<ActionResult> Put(AuthorAddDTO authorAddDTO, Guid id)
+        {
+            // Validar si el nombre del autor ya existe en la DB.
+            var authorExists = await _appDbContext.Authors.AnyAsync(authorDB => authorDB.Id == id);
+            if (!authorExists)
+            {
+                // BadRequest --> Devuelve error 400
+                return BadRequest($"El Autor con id {id}, no existe en la Base de Datos");
+            }
 
-        //    _appDbContext.Update(author);
-        //    await _appDbContext.SaveChangesAsync();
-        //    return Ok();
-        //}
+            var author =_mapper.Map<Author>(authorAddDTO);
+            author.Id = id;
 
-        ///// <summary>
-        ///// Eliminar registro de Autor, dado su Id, Sin DTO
-        ///// </summary>
-        ///// <param name="id"></param>
-        ///// <returns></returns>
-        //[HttpDelete("{id:Guid}")]
-        //public async Task<ActionResult> Delete(Guid id)
-        //{
-        //    var exists = await _appDbContext.Authors.AnyAsync(authorDB => authorDB.Id == id);
-        //    if (!exists)
-        //    {
-        //        return NotFound();
-        //    }
-       
-        //    _appDbContext.Remove(new Author() { Id = id });
-        //    await _appDbContext.SaveChangesAsync();
-        //    return Ok();
-        //}
+            // Database
+            _appDbContext.Update(author);
+            await _appDbContext.SaveChangesAsync();
+            return NoContent(); // Retorna 204
+        }
+
+        /// <summary>
+        /// Eliminar registro de Autor, dado su Id, Sin DTO
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpDelete("{id:Guid}")]
+        public async Task<ActionResult> Delete(Guid id)
+        {
+            var exists = await _appDbContext.Authors.AnyAsync(authorDB => authorDB.Id == id);
+            if (!exists)
+            {
+                return NotFound($"El Autor con id {id}, no existe en la Base de Datos");
+            }
+
+            _appDbContext.Remove(new Author() { Id = id });
+            await _appDbContext.SaveChangesAsync();
+
+            return NoContent(); // Retorna 204
+
+        }
     }
 }
