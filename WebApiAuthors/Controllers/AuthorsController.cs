@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebApiAuthors.DTOs;
@@ -11,6 +13,7 @@ namespace WebApiAuthors.Controllers
     /// </summary>
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class AuthorsController : ControllerBase
     {
         // Declaración variable DbContect
@@ -34,10 +37,13 @@ namespace WebApiAuthors.Controllers
         }
 
         /// <summary>
-        /// Listado de Autores, Con DTO
+        /// Todos los registros de la tabla Autores, Con DTO
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Listado de Autores, Con DTO</returns>
+        /// /// <response code="401">Usuario No Autorizado</response>  
         [HttpGet] // api/authors
+        [AllowAnonymous]
+        [ProducesResponseType(401)]
         public async Task<ActionResult<List<AuthorDTO>>> Get()
         {
             var authors = await _appDbContext.Authors.ToListAsync();

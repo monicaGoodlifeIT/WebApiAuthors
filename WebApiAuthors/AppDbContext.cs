@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using WebApiAuthors.Entities;
 
 namespace WebApiAuthors
@@ -6,7 +7,7 @@ namespace WebApiAuthors
     /// <summary>
     /// DBContext de la WebAPI
     /// </summary>
-    public class AppDbContext : DbContext
+    public class AppDbContext : IdentityDbContext
     {
         /// <summary>
         /// Constructor

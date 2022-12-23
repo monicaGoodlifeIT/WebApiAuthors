@@ -1,6 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Reflection;
+using System.Text;
 using System.Text.Json.Serialization;
 
 namespace WebApiAuthors
@@ -25,9 +29,20 @@ namespace WebApiAuthors
             services.AddDbContext<AppDbContext>(options => 
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-            services.AddEndpointsApiExplorer();
-            services.AddSwaggerGen(conf => { 
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options => 
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = false,
+                        ValidateAudience = false,
+                        ValidateLifetime = true,
+                        ValidateIssuerSigningKey = true,
+                        IssuerSigningKey = new SymmetricSecurityKey(
+                            Encoding.UTF8.GetBytes(Configuration["secretKeyJwt"])),
+                        ClockSkew = TimeSpan.Zero // Obtiene o establece el desfase horario que se aplicará al validar una hora.
+                    });
+
+            services.AddSwaggerGen(conf => {
                 conf.SwaggerDoc("v1", new OpenApiInfo
                 {
                     Title = "WebApiAuthors",
@@ -47,8 +62,33 @@ namespace WebApiAuthors
                     Version = "v1"
                 });
 
+                // Configuración Botón Autorize
+                conf.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.ApiKey,
+                    Scheme = "Bearer",
+                    BearerFormat = "JWT",
+                    In = ParameterLocation.Header,
+                    Description = "Token de Autorización"
+                });
+                // Funcionalidad Botón Autorize
+                conf.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "Bearer"
+                            }
+                        },
+                        new string[]{}
+                    }
+                });
 
-                 // generate the XML docs that'll drive the swagger docs
+                // generate the XML docs that'll drive the swagger docs
                 var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
 
@@ -56,8 +96,18 @@ namespace WebApiAuthors
                     xmlPath, includeControllerXmlComments: true);
             });
 
+
+            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+            services.AddEndpointsApiExplorer();
+            
+
             // Automapper
             services.AddAutoMapper(typeof(Startup));
+
+            // Identity
+            services.AddIdentity<IdentityUser, IdentityRole>()
+                .AddEntityFrameworkStores<AppDbContext>()
+                .AddDefaultTokenProviders();
         }
 
         // Middleware
@@ -79,6 +129,8 @@ namespace WebApiAuthors
 
             app.UseRouting();
 
+            // Authentication JWT
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
