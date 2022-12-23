@@ -32,6 +32,7 @@ namespace WebApiAuthors
                 {
                     Title = "WebApiAuthors",
                     Description = "Web API desarrollada con curso de UDEMY: Construyendo Web APIs RESTful con ASP.NET Core 6",
+                    TermsOfService = new Uri("https://example.com/terms"),
                     Contact = new OpenApiContact
                     {
                         Name = "Mónica Buenavida Corono",

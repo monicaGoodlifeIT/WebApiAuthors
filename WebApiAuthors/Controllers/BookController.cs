@@ -31,9 +31,9 @@ namespace WebApiAuthors.Controllers
         }
 
         /// <summary>
-        /// Listado de Colecciones, Con DTO
+        /// Trae la lista de todos los Libros
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Listado de Colecciones, Con DTO</returns>
         [HttpGet] // api/bookcollection
         public async Task<ActionResult<List<BookDTO>>> Get()
         {
@@ -66,13 +66,15 @@ namespace WebApiAuthors.Controllers
             return _mapper.Map<BookDTOwithAuthors>(book);
         }
 
- 
+
         /// <summary>
         /// Añade registro de Libro, con DTO
         /// </summary>
         /// <param name="bookAddDTO"></param>
         /// <returns></returns>
+        /// <response code="201">Returns the newly created item</response>
         [HttpPost]
+        [ProducesResponseType(201)]
         public async Task<ActionResult> Post(BookAddDTO bookAddDTO)
         {
             // Validar la existencia de autores
@@ -152,8 +154,25 @@ namespace WebApiAuthors.Controllers
         /// </summary>
         /// <param name="id">Identificador del Libro</param>
         /// <param name="patchDocument">Documento JsonPatch</param>
+        /// <remarks>
+        /// Documento JsonPatch:
+        ///     [
+        ///       {
+        ///         "path": "/title",
+        ///         "op": "replace",
+        ///         "value": "Nuevo Título"
+        ///       }
+        ///     ]
+        /// </remarks>
         /// <returns></returns>
+        /// <response code="204">Returns Succeess, sin contenido</response>
+        /// <response code="400">Si es null</response>    
+        /// <response code="404">Si no existe</response>    
         [HttpPatch("{id:Guid}")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        [Produces("application/json")]
         public async Task<ActionResult> Patch(Guid id, JsonPatchDocument<BookPatchDTO> patchDocument)
         {
             if(patchDocument == null)
