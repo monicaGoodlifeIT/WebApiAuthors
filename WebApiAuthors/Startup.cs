@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using System.IdentityModel.Tokens.Jwt;
 using System.Reflection;
 using System.Text;
 using System.Text.Json.Serialization;
@@ -14,6 +15,8 @@ namespace WebApiAuthors
         public Startup(IConfiguration configuration)
         {
            Configuration = configuration;
+            // Limpiar mapeo automático de los claims           
+            JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
         }
         
         public IConfiguration Configuration { get; }
