@@ -38,7 +38,7 @@ namespace WebApiAuthors
                         ValidateLifetime = true,
                         ValidateIssuerSigningKey = true,
                         IssuerSigningKey = new SymmetricSecurityKey(
-                            Encoding.UTF8.GetBytes(Configuration["secretKeyJwt"])),
+                            Encoding.UTF8.GetBytes(Configuration["secretKeyJwt"])), // Configurar la firma
                         ClockSkew = TimeSpan.Zero // Obtiene o establece el desfase horario que se aplicará al validar una hora.
                     });
 

@@ -134,7 +134,7 @@ namespace WebApiAuthors.Controllers
                 lockoutOnFailure: false // Bloqueo de usuario tras varios intentos fallidos
                 );
 
-            // Resultado
+            // Resultado 
             if (result.Succeeded)
             {
                 return BuildToken(credentialsDTO);
