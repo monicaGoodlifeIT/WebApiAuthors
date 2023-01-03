@@ -7,6 +7,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Reflection;
 using System.Text;
 using System.Text.Json.Serialization;
+using WebApiAuthors.Services;
 
 namespace WebApiAuthors
 {
@@ -111,6 +112,32 @@ namespace WebApiAuthors
             services.AddIdentity<IdentityUser, IdentityRole>()
                 .AddEntityFrameworkStores<AppDbContext>()
                 .AddDefaultTokenProviders();
+
+            // Autorización basada en Claims
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("IsAdmin", policy => policy.RequireClaim("IsAdmin"));
+                options.AddPolicy("IsSeller", policy => policy.RequireClaim("IsSeller"));
+            });
+
+            // Encriptación
+            services.AddDataProtection();
+
+            // Hash --> Transient, ya que el servicio no guarda el estado.
+            services.AddTransient<HashService>();
+
+            // Configuración de CORS
+            services.AddCors(options =>
+            {
+                options.AddDefaultPolicy(builder =>
+                {
+                    builder.WithOrigins("https://www.apirequest.io") // Lista las URL que tendrán acceso a la Web API
+                    .AllowAnyMethod() // Se refiere a los métodos HTTP
+                    .AllowAnyHeader(); // Permite cualquier cabecera
+                    //.WithExposedHeaders() // Si es necesario exponer cabeceras que se van adevolver desde la web API. Aunque en este caso no es necesario.
+
+                });
+            });
         }
 
         // Middleware
@@ -128,9 +155,13 @@ namespace WebApiAuthors
                 });
             }
 
+            // Redirige las peticiones http a https
             app.UseHttpsRedirection();
 
             app.UseRouting();
+
+            // CORS
+            app.UseCors();
 
             // Authentication JWT
             app.UseAuthentication();

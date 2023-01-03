@@ -13,7 +13,7 @@ namespace WebApiAuthors.Controllers
     /// </summary>
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy ="IsAdmin")]
     public class AuthorsController : ControllerBase
     {
         // Declaración variable DbContect
@@ -55,13 +55,12 @@ namespace WebApiAuthors.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        // Al añadir en la ruta la restrincción INT, al ingresar un tipo de datio no válido,
+        // Al añadir en la ruta la restrincción INT, al ingresar un tipo de dato no válido,
         // devolverá un error 404 (NotFaund), en lugar de 400(BadRequest).
         [HttpGet("{id:Guid}", Name ="getAuthorById")]// api/authors/1
         public async Task<ActionResult<AuthorDTOwithBooks>> Get(Guid id)
         {
-            var author = await _appDbContext.Authors
-                .Include(authorDB => authorDB.AuthorsBooks)
+            var author = await _appDbContext.Authors.Include(authorDB => authorDB.AuthorsBooks)
                 .ThenInclude(authorBookDB => authorBookDB.Book)                
                 .FirstOrDefaultAsync(authorDB => authorDB.Id == id);
 
@@ -96,7 +95,7 @@ namespace WebApiAuthors.Controllers
             // Validar si el nombre del autor ya existe en la DB.
             var authorExists = await _appDbContext.Authors.AnyAsync(authorDB => authorDB.Name == authorAddDTO.Name);
 
-            if (authorExists)
+            if (authorExists) 
             {
                 return BadRequest($"El autor {authorAddDTO.Name}, ya existe en la BB - Controlador");
             }
